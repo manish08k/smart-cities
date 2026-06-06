@@ -1,13 +1,12 @@
 from typing import Dict, Optional
 from models.parking_models import ParkingSlot
-from datetime import datetime
-import uuid
+from datetime import datetime, timezone
 
-# Pre-seed parking slots for a city grid (lat/lon near a city center)
 _BASE_LAT = 16.5062
 _BASE_LON = 80.6480
 
 PARKING_SLOTS: Dict[str, ParkingSlot] = {}
+
 
 def _init_slots():
     zones = ["A", "B", "C", "D"]
@@ -23,6 +22,7 @@ def _init_slots():
                 lat=_BASE_LAT + (z_idx * 0.002) + (i * 0.0003),
                 lon=_BASE_LON + (z_idx * 0.003) + (i * 0.0002),
             )
+
 
 _init_slots()
 
@@ -41,7 +41,7 @@ def book_slot(slot_id: str, vehicle_number: str) -> Optional[ParkingSlot]:
         return None
     slot.is_occupied = True
     slot.vehicle_number = vehicle_number
-    slot.occupied_since = datetime.utcnow()
+    slot.occupied_since = datetime.now(timezone.utc)   # fixed: was utcnow()
     PARKING_SLOTS[slot_id] = slot
     return slot
 
